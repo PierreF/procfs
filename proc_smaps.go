@@ -18,8 +18,13 @@ package procfs
 import (
 	"bufio"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
+)
+
+var (
+	rFirstLine = regexp.MustCompile(`^[a-f0-9].*$`)
 )
 
 type ProcSMaps []*ProcSMap
@@ -173,7 +178,7 @@ func (p Proc) ProcSMaps() (ProcSMaps, error) {
 		line := scan.Text()
 		// first line of a mapping start with an hexadecimal address in lower-case
 		// All other line start with a capitalized words.
-		if (line[0] >= '0' && line[0] <= '9') || (line[0] >= 'a' && line[0] <= 'f') {
+		if rFirstLine.MatchString(line) {
 			if currentMap != nil {
 				smaps = append(smaps, currentMap)
 			}
